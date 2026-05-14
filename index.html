@@ -1,0 +1,736 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>My Dating Diary 💌</title>
+<style>
+  :root {
+    --pink: #f48fb1;
+    --pink-dark: #c2185b;
+    --pink-light: #fce4ec;
+    --purple: #9c27b0;
+    --purple-light: #f3e5f5;
+    --dark: #1a1a2e;
+    --card-bg: #fff;
+    --text: #333;
+    --text-muted: #777;
+    --border: #e0e0e0;
+    --danger: #e53935;
+    --success: #43a047;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    font-family: 'Segoe UI', sans-serif;
+    background: #1a1a2e;
+    min-height: 100vh;
+    color: var(--text);
+  }
+
+  /* ── LOGIN PAGE ── */
+  #login-page {
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: linear-gradient(135deg, #1a1a2e 0%, #16213e 50%, #0f3460 100%);
+  }
+
+  .login-box {
+    background: rgba(255,255,255,0.05);
+    border: 1px solid rgba(255,255,255,0.1);
+    border-radius: 20px;
+    padding: 48px 40px;
+    width: 360px;
+    text-align: center;
+    backdrop-filter: blur(10px);
+  }
+
+  .login-box .logo { font-size: 52px; margin-bottom: 8px; }
+  .login-box h1 { color: #fff; font-size: 22px; font-weight: 600; margin-bottom: 4px; }
+  .login-box p { color: rgba(255,255,255,0.5); font-size: 13px; margin-bottom: 28px; }
+
+  .login-box input {
+    width: 100%;
+    padding: 12px 16px;
+    border-radius: 10px;
+    border: 1px solid rgba(255,255,255,0.15);
+    background: rgba(255,255,255,0.08);
+    color: #fff;
+    font-size: 14px;
+    margin-bottom: 12px;
+    outline: none;
+    transition: border 0.2s;
+  }
+  .login-box input::placeholder { color: rgba(255,255,255,0.3); }
+  .login-box input:focus { border-color: var(--pink); }
+
+  .login-box button {
+    width: 100%;
+    padding: 13px;
+    border-radius: 10px;
+    border: none;
+    background: linear-gradient(135deg, #e91e63, #9c27b0);
+    color: #fff;
+    font-size: 15px;
+    font-weight: 600;
+    cursor: pointer;
+    margin-top: 4px;
+    transition: opacity 0.2s, transform 0.1s;
+  }
+  .login-box button:hover { opacity: 0.9; }
+  .login-box button:active { transform: scale(0.98); }
+  .login-err { color: #f48fb1; font-size: 13px; margin-top: 10px; display: none; }
+
+  /* ── MAIN APP ── */
+  #app { display: none; min-height: 100vh; background: #f5f5f7; }
+
+  /* Top bar */
+  .topbar {
+    background: linear-gradient(135deg, #1a1a2e, #0f3460);
+    color: #fff;
+    padding: 0 28px;
+    height: 62px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    position: sticky;
+    top: 0;
+    z-index: 100;
+  }
+  .topbar-left { display: flex; align-items: center; gap: 10px; }
+  .topbar-left .icon { font-size: 26px; }
+  .topbar-left h1 { font-size: 18px; font-weight: 600; }
+  .topbar-right { display: flex; align-items: center; gap: 14px; }
+  .topbar-right .stats-pill {
+    background: rgba(255,255,255,0.12);
+    border-radius: 20px;
+    padding: 4px 12px;
+    font-size: 13px;
+  }
+  .btn-add {
+    background: linear-gradient(135deg, #e91e63, #9c27b0);
+    color: #fff;
+    border: none;
+    padding: 8px 18px;
+    border-radius: 20px;
+    font-size: 13px;
+    font-weight: 600;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+  }
+  .btn-logout {
+    background: rgba(255,255,255,0.1);
+    color: rgba(255,255,255,0.7);
+    border: 1px solid rgba(255,255,255,0.15);
+    padding: 6px 14px;
+    border-radius: 20px;
+    font-size: 12px;
+    cursor: pointer;
+  }
+
+  /* Hero banner */
+  .hero {
+    background: linear-gradient(135deg, #fce4ec, #f3e5f5);
+    padding: 32px 28px 28px;
+    border-bottom: 1px solid #e8d5f0;
+    text-align: center;
+  }
+  .hero h2 { font-size: 28px; color: #880e4f; font-style: italic; font-weight: 700; }
+  .hero p { color: #9c27b0; font-size: 14px; margin-top: 6px; }
+
+  /* Filter bar */
+  .filter-bar {
+    padding: 16px 28px;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    background: #fff;
+    border-bottom: 1px solid var(--border);
+    flex-wrap: wrap;
+  }
+  .filter-bar input[type="text"] {
+    flex: 1;
+    min-width: 180px;
+    padding: 9px 14px;
+    border: 1px solid var(--border);
+    border-radius: 22px;
+    font-size: 14px;
+    outline: none;
+  }
+  .filter-bar input:focus { border-color: var(--pink-dark); }
+  .filter-bar select {
+    padding: 9px 14px;
+    border: 1px solid var(--border);
+    border-radius: 22px;
+    font-size: 14px;
+    outline: none;
+    background: #fff;
+    cursor: pointer;
+  }
+
+  /* Grid */
+  .grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+    gap: 24px;
+    padding: 28px;
+  }
+
+  /* Card */
+  .card {
+    background: #fff;
+    border-radius: 18px;
+    overflow: hidden;
+    border: 1px solid #ede0f0;
+    transition: transform 0.2s, box-shadow 0.2s;
+    position: relative;
+  }
+  .card:hover { transform: translateY(-4px); box-shadow: 0 12px 30px rgba(0,0,0,0.1); }
+
+  .card-img {
+    width: 100%;
+    height: 200px;
+    object-fit: cover;
+    background: linear-gradient(135deg, #fce4ec, #f3e5f5);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 64px;
+    color: #e91e63;
+  }
+  .card-img img { width: 100%; height: 100%; object-fit: cover; }
+
+  .card-body { padding: 16px 18px 14px; }
+  .card-name { font-size: 18px; font-weight: 700; color: #1a1a2e; margin-bottom: 2px; }
+  .card-year { font-size: 12px; color: var(--pink-dark); font-weight: 600; background: var(--pink-light); display: inline-block; padding: 2px 10px; border-radius: 10px; margin-bottom: 8px; }
+  .card-bio { font-size: 13px; color: var(--text-muted); line-height: 1.5; margin-bottom: 10px; }
+  .card-emojis { font-size: 20px; letter-spacing: 3px; margin-bottom: 12px; }
+  .card-tags { display: flex; flex-wrap: wrap; gap: 5px; margin-bottom: 12px; }
+  .tag { background: var(--purple-light); color: var(--purple); font-size: 11px; padding: 3px 9px; border-radius: 10px; font-weight: 500; }
+
+  .card-actions { display: flex; gap: 8px; border-top: 1px solid #f0e6f6; padding-top: 12px; }
+  .btn-edit, .btn-del {
+    flex: 1;
+    padding: 7px;
+    border-radius: 10px;
+    font-size: 13px;
+    cursor: pointer;
+    border: none;
+    font-weight: 500;
+  }
+  .btn-edit { background: var(--purple-light); color: var(--purple); }
+  .btn-edit:hover { background: #e1bee7; }
+  .btn-del { background: #ffebee; color: var(--danger); }
+  .btn-del:hover { background: #ffcdd2; }
+
+  /* Rating stars */
+  .card-rating { color: #ffc107; font-size: 16px; margin-bottom: 6px; }
+
+  /* Empty state */
+  .empty {
+    text-align: center;
+    padding: 80px 20px;
+    grid-column: 1/-1;
+  }
+  .empty .big { font-size: 64px; margin-bottom: 16px; }
+  .empty h3 { font-size: 20px; color: #555; margin-bottom: 8px; }
+  .empty p { color: #999; font-size: 14px; }
+
+  /* ── MODAL ── */
+  .modal-overlay {
+    display: none;
+    position: fixed; inset: 0;
+    background: rgba(0,0,0,0.55);
+    z-index: 200;
+    align-items: center;
+    justify-content: center;
+    padding: 20px;
+  }
+  .modal-overlay.open { display: flex; }
+
+  .modal {
+    background: #fff;
+    border-radius: 20px;
+    width: 100%;
+    max-width: 540px;
+    max-height: 90vh;
+    overflow-y: auto;
+    padding: 28px 32px;
+    position: relative;
+  }
+  .modal h2 { font-size: 20px; color: #1a1a2e; margin-bottom: 22px; font-weight: 700; }
+  .modal-close {
+    position: absolute;
+    top: 20px; right: 22px;
+    background: none;
+    border: none;
+    font-size: 22px;
+    cursor: pointer;
+    color: #999;
+    line-height: 1;
+  }
+
+  .form-group { margin-bottom: 16px; }
+  .form-group label { display: block; font-size: 13px; font-weight: 600; color: #555; margin-bottom: 6px; }
+  .form-group input,
+  .form-group textarea,
+  .form-group select {
+    width: 100%;
+    padding: 10px 14px;
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    font-size: 14px;
+    outline: none;
+    font-family: inherit;
+    transition: border 0.2s;
+  }
+  .form-group input:focus,
+  .form-group textarea:focus,
+  .form-group select:focus { border-color: var(--pink-dark); }
+  .form-group textarea { resize: vertical; min-height: 80px; }
+
+  .emoji-grid { display: flex; flex-wrap: wrap; gap: 8px; }
+  .emoji-btn {
+    width: 38px; height: 38px;
+    border: 2px solid var(--border);
+    border-radius: 8px;
+    background: #fff;
+    font-size: 20px;
+    cursor: pointer;
+    display: flex; align-items: center; justify-content: center;
+    transition: border 0.15s, background 0.15s;
+  }
+  .emoji-btn.selected { border-color: var(--pink-dark); background: var(--pink-light); }
+
+  .star-input { display: flex; gap: 6px; font-size: 24px; cursor: pointer; }
+  .star-input span { color: #ddd; transition: color 0.15s; }
+  .star-input span.lit { color: #ffc107; }
+
+  .form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+
+  .btn-save {
+    width: 100%;
+    padding: 12px;
+    background: linear-gradient(135deg, #e91e63, #9c27b0);
+    color: #fff;
+    border: none;
+    border-radius: 12px;
+    font-size: 15px;
+    font-weight: 600;
+    cursor: pointer;
+    margin-top: 8px;
+  }
+  .btn-save:hover { opacity: 0.92; }
+
+  /* Toast */
+  .toast {
+    position: fixed;
+    bottom: 28px; right: 28px;
+    background: #1a1a2e;
+    color: #fff;
+    padding: 12px 20px;
+    border-radius: 10px;
+    font-size: 14px;
+    z-index: 999;
+    opacity: 0;
+    transform: translateY(10px);
+    transition: all 0.3s;
+    pointer-events: none;
+  }
+  .toast.show { opacity: 1; transform: translateY(0); }
+
+  /* Confirm dialog */
+  .confirm-overlay {
+    display: none;
+    position: fixed; inset: 0;
+    background: rgba(0,0,0,0.5);
+    z-index: 300;
+    align-items: center;
+    justify-content: center;
+  }
+  .confirm-overlay.open { display: flex; }
+  .confirm-box {
+    background: #fff;
+    border-radius: 16px;
+    padding: 28px 32px;
+    width: 320px;
+    text-align: center;
+  }
+  .confirm-box .icon { font-size: 40px; margin-bottom: 12px; }
+  .confirm-box h3 { font-size: 17px; margin-bottom: 8px; }
+  .confirm-box p { font-size: 13px; color: #777; margin-bottom: 20px; }
+  .confirm-actions { display: flex; gap: 10px; }
+  .confirm-actions button { flex: 1; padding: 10px; border-radius: 10px; border: none; font-size: 14px; font-weight: 600; cursor: pointer; }
+  .confirm-cancel { background: #f0f0f0; color: #555; }
+  .confirm-ok { background: var(--danger); color: #fff; }
+
+  /* Scrollbar */
+  ::-webkit-scrollbar { width: 6px; }
+  ::-webkit-scrollbar-track { background: transparent; }
+  ::-webkit-scrollbar-thumb { background: #ddd; border-radius: 3px; }
+</style>
+</head>
+<body>
+
+<!-- ── LOGIN PAGE ── -->
+<div id="login-page">
+  <div class="login-box">
+    <div class="logo">💌</div>
+    <h1>My Dating Diary</h1>
+    <p>Private access only</p>
+    <input type="text" id="username" placeholder="Username" autocomplete="off">
+    <input type="password" id="password" placeholder="Password">
+    <button onclick="doLogin()">Enter ✨</button>
+    <div class="login-err" id="login-err">Wrong credentials. Try again.</div>
+  </div>
+</div>
+
+<!-- ── MAIN APP ── -->
+<div id="app">
+  <div class="topbar">
+    <div class="topbar-left">
+      <span class="icon">💌</span>
+      <h1>My Dating Diary</h1>
+    </div>
+    <div class="topbar-right">
+      <div class="stats-pill" id="stats-pill">0 memories</div>
+      <button class="btn-add" onclick="openModal()">+ Add Her</button>
+      <button class="btn-logout" onclick="doLogout()">Logout</button>
+    </div>
+  </div>
+
+  <div class="hero">
+    <h2>All The Girls I Have Dated... 💕</h2>
+    <p>A private collection of memories, stories, and moments that shaped me.</p>
+  </div>
+
+  <div class="filter-bar">
+    <input type="text" id="search-input" placeholder="🔍  Search by name..." oninput="renderCards()">
+    <select id="sort-select" onchange="renderCards()">
+      <option value="newest">Newest first</option>
+      <option value="oldest">Oldest first</option>
+      <option value="name">Name A–Z</option>
+      <option value="rating">Top rated</option>
+    </select>
+  </div>
+
+  <div class="grid" id="card-grid"></div>
+</div>
+
+<!-- ── ADD/EDIT MODAL ── -->
+<div class="modal-overlay" id="modal-overlay">
+  <div class="modal">
+    <button class="modal-close" onclick="closeModal()">✕</button>
+    <h2 id="modal-title">Add a Memory 💕</h2>
+
+    <div class="form-row">
+      <div class="form-group">
+        <label>Her Name *</label>
+        <input type="text" id="f-name" placeholder="e.g. Sara">
+      </div>
+      <div class="form-group">
+        <label>Year</label>
+        <input type="number" id="f-year" placeholder="e.g. 2021" min="1990" max="2030">
+      </div>
+    </div>
+
+    <div class="form-group">
+      <label>Short Bio / Description</label>
+      <textarea id="f-bio" placeholder="Who was she? Where did you meet? First impression..."></textarea>
+    </div>
+
+    <div class="form-group">
+      <label>Photo URL (optional)</label>
+      <input type="text" id="f-photo" placeholder="https://... (paste any image URL)">
+    </div>
+
+    <div class="form-row">
+      <div class="form-group">
+        <label>Nickname</label>
+        <input type="text" id="f-nick" placeholder="e.g. Sunshine">
+      </div>
+      <div class="form-group">
+        <label>Where you met</label>
+        <input type="text" id="f-where" placeholder="e.g. University, App, Work">
+      </div>
+    </div>
+
+    <div class="form-group">
+      <label>Things we did together (pick emojis)</label>
+      <div class="emoji-grid" id="emoji-grid"></div>
+    </div>
+
+    <div class="form-group">
+      <label>Tags (comma separated)</label>
+      <input type="text" id="f-tags" placeholder="e.g. funny, traveler, bookworm">
+    </div>
+
+    <div class="form-group">
+      <label>How special was she? ⭐</label>
+      <div class="star-input" id="star-input">
+        <span data-v="1">★</span>
+        <span data-v="2">★</span>
+        <span data-v="3">★</span>
+        <span data-v="4">★</span>
+        <span data-v="5">★</span>
+      </div>
+    </div>
+
+    <div class="form-group">
+      <label>A private note (only you see this)</label>
+      <textarea id="f-note" placeholder="How it ended, what you learned, a favourite memory..."></textarea>
+    </div>
+
+    <button class="btn-save" onclick="saveEntry()">Save Memory 💾</button>
+  </div>
+</div>
+
+<!-- ── CONFIRM DELETE ── -->
+<div class="confirm-overlay" id="confirm-overlay">
+  <div class="confirm-box">
+    <div class="icon">🗑️</div>
+    <h3>Delete this memory?</h3>
+    <p>This can't be undone. Are you sure?</p>
+    <div class="confirm-actions">
+      <button class="confirm-cancel" onclick="closeConfirm()">Cancel</button>
+      <button class="confirm-ok" onclick="confirmDelete()">Yes, delete</button>
+    </div>
+  </div>
+</div>
+
+<!-- ── TOAST ── -->
+<div class="toast" id="toast"></div>
+
+<script>
+// ── CREDENTIALS (change these!) ──
+const ADMIN_USER = 'admin';
+const ADMIN_PASS = 'secret123';
+
+// ── EMOJI OPTIONS ──
+const EMOJI_OPTIONS = [
+  { e: '🎬', l: 'Movies' }, { e: '🍕', l: 'Food dates' }, { e: '✈️', l: 'Travel' },
+  { e: '🎵', l: 'Concerts' }, { e: '🏖️', l: 'Beach' }, { e: '🍷', l: 'Drinks' },
+  { e: '🎮', l: 'Gaming' }, { e: '📚', l: 'Books' }, { e: '🚗', l: 'Road trips' },
+  { e: '🏕️', l: 'Camping' }, { e: '🎡', l: 'Amusement parks' }, { e: '🌙', l: 'Late nights' },
+  { e: '💃', l: 'Dancing' }, { e: '🧁', l: 'Baking' }, { e: '🏃', l: 'Running' },
+  { e: '🤿', l: 'Adventure' }, { e: '🎨', l: 'Art' }, { e: '🧳', l: 'Trips' },
+  { e: '☕', l: 'Coffee' }, { e: '🎭', l: 'Theatre' }
+];
+
+let entries = JSON.parse(localStorage.getItem('diary_entries') || '[]');
+let editingId = null;
+let deleteId = null;
+let selectedEmojis = [];
+let selectedRating = 0;
+
+// ── AUTH ──
+function doLogin() {
+  const u = document.getElementById('username').value.trim();
+  const p = document.getElementById('password').value;
+  const err = document.getElementById('login-err');
+  if (u === ADMIN_USER && p === ADMIN_PASS) {
+    sessionStorage.setItem('logged_in', '1');
+    document.getElementById('login-page').style.display = 'none';
+    document.getElementById('app').style.display = 'block';
+    renderCards();
+    err.style.display = 'none';
+  } else {
+    err.style.display = 'block';
+    document.getElementById('password').value = '';
+  }
+}
+
+function doLogout() {
+  sessionStorage.removeItem('logged_in');
+  document.getElementById('app').style.display = 'none';
+  document.getElementById('login-page').style.display = 'flex';
+  document.getElementById('username').value = '';
+  document.getElementById('password').value = '';
+}
+
+// Allow Enter key on login
+['username','password'].forEach(id => {
+  document.getElementById(id).addEventListener('keydown', e => { if (e.key === 'Enter') doLogin(); });
+});
+
+// ── RENDER ──
+function renderCards() {
+  const q = document.getElementById('search-input').value.toLowerCase();
+  const sort = document.getElementById('sort-select').value;
+  let data = entries.filter(e => !q || e.name.toLowerCase().includes(q));
+
+  if (sort === 'newest') data.sort((a,b) => (b.year||0)-(a.year||0));
+  else if (sort === 'oldest') data.sort((a,b) => (a.year||0)-(b.year||0));
+  else if (sort === 'name') data.sort((a,b) => a.name.localeCompare(b.name));
+  else if (sort === 'rating') data.sort((a,b) => (b.rating||0)-(a.rating||0));
+
+  document.getElementById('stats-pill').textContent = entries.length + ' memor' + (entries.length===1?'y':'ies');
+
+  const grid = document.getElementById('card-grid');
+  if (data.length === 0) {
+    grid.innerHTML = `<div class="empty">
+      <div class="big">${q ? '🔍' : '💌'}</div>
+      <h3>${q ? 'No matches found' : 'No memories yet'}</h3>
+      <p>${q ? 'Try a different name.' : 'Click "+ Add Her" to add your first memory.'}</p>
+    </div>`;
+    return;
+  }
+
+  grid.innerHTML = data.map(e => `
+    <div class="card">
+      <div class="card-img">
+        ${e.photo ? `<img src="${e.photo}" onerror="this.parentElement.innerHTML='💕'" alt="${e.name}">` : '💕'}
+      </div>
+      <div class="card-body">
+        <div class="card-name">${e.name} ${e.nick ? `<span style="font-size:14px;color:#9c27b0;font-weight:400;">(${e.nick})</span>` : ''}</div>
+        ${e.year ? `<span class="card-year">📅 ${e.year}</span>` : ''}
+        ${e.where ? `<span class="card-year" style="background:#f3e5f5;color:#7b1fa2;margin-left:5px;">📍 ${e.where}</span>` : ''}
+        ${e.rating ? `<div class="card-rating">${'★'.repeat(e.rating)}${'☆'.repeat(5-e.rating)}</div>` : ''}
+        ${e.bio ? `<div class="card-bio">${e.bio}</div>` : ''}
+        ${e.emojis && e.emojis.length ? `<div class="card-emojis">${e.emojis.join(' ')}</div>` : ''}
+        ${e.tags && e.tags.length ? `<div class="card-tags">${e.tags.map(t=>`<span class="tag">${t}</span>`).join('')}</div>` : ''}
+        ${e.note ? `<div style="font-size:12px;color:#aaa;border-top:1px dashed #eee;padding-top:8px;margin-top:4px;font-style:italic;">🔒 ${e.note}</div>` : ''}
+        <div class="card-actions">
+          <button class="btn-edit" onclick="openModal('${e.id}')">✏️ Edit</button>
+          <button class="btn-del" onclick="askDelete('${e.id}')">🗑️ Delete</button>
+        </div>
+      </div>
+    </div>
+  `).join('');
+}
+
+// ── MODAL ──
+function buildEmojiGrid() {
+  const grid = document.getElementById('emoji-grid');
+  grid.innerHTML = EMOJI_OPTIONS.map(o => `
+    <button class="emoji-btn ${selectedEmojis.includes(o.e)?'selected':''}" 
+      onclick="toggleEmoji('${o.e}')" title="${o.l}" type="button">${o.e}</button>
+  `).join('');
+}
+
+function toggleEmoji(e) {
+  selectedEmojis = selectedEmojis.includes(e)
+    ? selectedEmojis.filter(x => x !== e)
+    : [...selectedEmojis, e];
+  buildEmojiGrid();
+}
+
+function buildStars(val) {
+  document.querySelectorAll('#star-input span').forEach(s => {
+    s.classList.toggle('lit', parseInt(s.dataset.v) <= val);
+  });
+}
+
+function openModal(id) {
+  editingId = id || null;
+  selectedEmojis = [];
+  selectedRating = 0;
+
+  const entry = id ? entries.find(e => e.id === id) : null;
+  document.getElementById('modal-title').textContent = entry ? 'Edit Memory ✏️' : 'Add a Memory 💕';
+  document.getElementById('f-name').value   = entry?.name  || '';
+  document.getElementById('f-year').value   = entry?.year  || '';
+  document.getElementById('f-bio').value    = entry?.bio   || '';
+  document.getElementById('f-photo').value  = entry?.photo || '';
+  document.getElementById('f-nick').value   = entry?.nick  || '';
+  document.getElementById('f-where').value  = entry?.where || '';
+  document.getElementById('f-tags').value   = entry?.tags?.join(', ') || '';
+  document.getElementById('f-note').value   = entry?.note  || '';
+
+  if (entry) { selectedEmojis = entry.emojis || []; selectedRating = entry.rating || 0; }
+  buildEmojiGrid();
+  buildStars(selectedRating);
+
+  document.getElementById('star-input').querySelectorAll('span').forEach(s => {
+    s.addEventListener('mouseenter', () => buildStars(parseInt(s.dataset.v)));
+    s.addEventListener('mouseleave', () => buildStars(selectedRating));
+    s.addEventListener('click', () => { selectedRating = parseInt(s.dataset.v); buildStars(selectedRating); });
+  });
+
+  document.getElementById('modal-overlay').classList.add('open');
+}
+
+function closeModal() {
+  document.getElementById('modal-overlay').classList.remove('open');
+  editingId = null;
+}
+
+function saveEntry() {
+  const name = document.getElementById('f-name').value.trim();
+  if (!name) { alert('Name is required!'); return; }
+
+  const entry = {
+    id:     editingId || Date.now().toString(),
+    name,
+    year:   parseInt(document.getElementById('f-year').value) || null,
+    bio:    document.getElementById('f-bio').value.trim(),
+    photo:  document.getElementById('f-photo').value.trim(),
+    nick:   document.getElementById('f-nick').value.trim(),
+    where:  document.getElementById('f-where').value.trim(),
+    emojis: selectedEmojis,
+    tags:   document.getElementById('f-tags').value.split(',').map(t=>t.trim()).filter(Boolean),
+    rating: selectedRating,
+    note:   document.getElementById('f-note').value.trim(),
+  };
+
+  if (editingId) {
+    const idx = entries.findIndex(e => e.id === editingId);
+    if (idx !== -1) entries[idx] = entry;
+    toast('Memory updated! ✨');
+  } else {
+    entries.unshift(entry);
+    toast('Memory added! 💕');
+  }
+
+  localStorage.setItem('diary_entries', JSON.stringify(entries));
+  closeModal();
+  renderCards();
+}
+
+// ── DELETE ──
+function askDelete(id) {
+  deleteId = id;
+  document.getElementById('confirm-overlay').classList.add('open');
+}
+function closeConfirm() {
+  deleteId = null;
+  document.getElementById('confirm-overlay').classList.remove('open');
+}
+function confirmDelete() {
+  entries = entries.filter(e => e.id !== deleteId);
+  localStorage.setItem('diary_entries', JSON.stringify(entries));
+  closeConfirm();
+  renderCards();
+  toast('Memory deleted 🗑️');
+}
+
+// ── TOAST ──
+function toast(msg) {
+  const el = document.getElementById('toast');
+  el.textContent = msg;
+  el.classList.add('show');
+  setTimeout(() => el.classList.remove('show'), 2800);
+}
+
+// ── CLOSE MODAL ON OUTSIDE CLICK ──
+document.getElementById('modal-overlay').addEventListener('click', function(e) {
+  if (e.target === this) closeModal();
+});
+document.getElementById('confirm-overlay').addEventListener('click', function(e) {
+  if (e.target === this) closeConfirm();
+});
+
+// ── AUTO LOGIN IF SESSION ──
+if (sessionStorage.getItem('logged_in') === '1') {
+  document.getElementById('login-page').style.display = 'none';
+  document.getElementById('app').style.display = 'block';
+  renderCards();
+}
+</script>
+</body>
+</html>
